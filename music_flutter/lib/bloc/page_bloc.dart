@@ -2,7 +2,7 @@ import 'package:music_flutter/bloc/bloc_base.dart';
 import 'package:rxdart/rxdart.dart';
 
 class PageBlock extends BlocBase {
-  BehaviorSubject<int> page = BehaviorSubject.seeded(0);
+  BehaviorSubject<int> page = BehaviorSubject<int>.seeded(0);
 
   Function(int) get changePage => page.add;
 
