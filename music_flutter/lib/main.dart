@@ -78,6 +78,7 @@ class _MusicAppHomeState extends State<MusicAppHome> {
     return Scaffold(
         body: _buildBody(page),
         bottomNavigationBar: StreamBuilder(
+          initialData: 0,
           stream: page.currentPage,
           builder: (context, AsyncSnapshot<int> snapshot) {
             return BottomNavigationBar(
@@ -110,6 +111,7 @@ class _MusicAppHomeState extends State<MusicAppHome> {
             child: CustomScrollView(slivers: <Widget>[
               buildAppBar(),
               StreamBuilder<int>(
+                initialData: 0,
                 stream: pageBlock.currentPage,
                 builder: (context, AsyncSnapshot<int> snapshot) {
                   return buildCurrentPage(snapshot.data);
@@ -169,17 +171,24 @@ class _MusicAppHomeState extends State<MusicAppHome> {
         );
       });
 
-  buildCurrentPage(int currentPage) {
-    print('sss $currentPage');
-    switch (currentPage) {
-      case 0:
-        return LibraryWidget();
-      case 1:
-        return DiscoveryWidget();
-      case 2:
-        return DownloadWidget();
-      default:
-        return LibraryWidget();
+  buildCurrentPage(int index) {
+    print('sss $index');
+//    switch (currentPage) {
+//      case 0:
+//        return LibraryWidget();
+//      case 1:
+//        return DiscoveryWidget();
+//      case 2:
+//        return DownloadWidget();
+//      default:
+//        return LibraryWidget();
+//    }
+    if (index == 0) {
+      return LibraryWidget();
+    } else if (index == 1) {
+      return DiscoveryWidget();
+    } else {
+      return DownloadWidget();
     }
   }
 
