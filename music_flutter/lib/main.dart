@@ -3,8 +3,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logging/logging.dart';
+import 'package:music_flutter/api/podcast_api.dart';
+import 'package:music_flutter/api/podcast_api_impl.dart';
 import 'package:music_flutter/bloc/page_bloc.dart';
+import 'package:music_flutter/service/podcast_service.dart';
+import 'package:music_flutter/service/podcast_service_impl.dart';
 import 'package:music_flutter/themes.dart';
+import 'package:music_flutter/widget/discovery/bloc/discover_block.dart';
 import 'package:music_flutter/widget/discovery/discovery.dart';
 import 'package:music_flutter/widget/download/download.dart';
 import 'package:music_flutter/widget/library/library_widget.dart';
@@ -28,6 +33,11 @@ void main() {
 class MusicApp extends StatelessWidget {
   // This widget is the root of your application.
   final themes = ThemeApp.primary();
+  final PodCastApiImpl podCastApi;
+  PodcastService podcastService;
+  MusicApp() : podCastApi = PodCastApiImpl(){
+    this.podcastService = PodcastServiceImpl(podCastApi);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +45,10 @@ class MusicApp extends StatelessWidget {
       providers: [
         Provider<PageBlock>(
           create: (_) => PageBlock(),
+          dispose: (_, value) => value.dispose(),
+        ),
+        Provider<DiscoverBloc>(
+          create: (_) => DiscoverBloc(podcastService),
           dispose: (_, value) => value.dispose(),
         )
       ],
@@ -135,9 +149,7 @@ class _MusicAppHomeState extends State<MusicAppHome> {
         ),
         actions: <Widget>[
           InkWell(
-              onTap: () => Navigator.push(
-                    context,createRoute()
-                  ),
+              onTap: () => Navigator.push(context, createRoute()),
               child: Icon(Icons.search)),
           PopupMenuButton<String>(
             itemBuilder: (context) {

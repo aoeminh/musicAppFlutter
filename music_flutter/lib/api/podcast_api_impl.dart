@@ -6,12 +6,12 @@ class PodCastApiImpl extends PodCastApi {
   final Search api = Search();
 
   @override
-  Future<SearchResult> charts(int size) {
-    return compute(_chart, 0);
+  Future<SearchResult> charts(int size) async{
+    return _chart(size);
   }
 
   Future<SearchResult> _chart(int size){
-    return api.charts(limit: size).timeout(Duration(seconds: 10));
+    return api.charts(limit: size??10).timeout(Duration(seconds: 10));
   }
 
   @override
