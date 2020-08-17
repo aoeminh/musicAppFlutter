@@ -300,11 +300,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "9cdcd9d3ee9fc25406823109810e8a5ad707ebaa"
-      resolved-ref: "9cdcd9d3ee9fc25406823109810e8a5ad707ebaa"
+      ref: "4390c0a70499477dc0b03d3a6d6529b515bfb816"
+      resolved-ref: "4390c0a70499477dc0b03d3a6d6529b515bfb816"
       url: "https://github.com/amugofjava/podcast_search.git"
     source: git
-    version: "0.3.4"
+    version: "0.3.5"
   process:
     dependency: transitive
     description:
@@ -333,6 +333,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.24.1"
+  sembast:
+    dependency: "direct main"
+    description:
+      name: sembast
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.4.7+6"
   sky_engine:
     dependency: transitive
     description: flutter

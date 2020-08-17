@@ -18,6 +18,8 @@ import 'package:podcast_search/podcast_search.dart';
 import 'package:provider/provider.dart';
 
 import 'generated/l10n.dart';
+import 'repository/repository.dart';
+import 'repository/sembast/sembast_repository.dart';
 
 void main() {
   Logger.root.level = Level.FINE;
@@ -34,9 +36,13 @@ class MusicApp extends StatelessWidget {
   // This widget is the root of your application.
   final themes = ThemeApp.primary();
   final PodCastApiImpl podCastApi;
+  final Repository repository;
   PodcastService podcastService;
-  MusicApp() : podCastApi = PodCastApiImpl(){
-    this.podcastService = PodcastServiceImpl(podCastApi);
+
+  MusicApp()
+      : repository = SembastRepository(),
+        podCastApi = PodCastApiImpl() {
+    this.podcastService = PodcastServiceImpl(podCastApi, repository);
   }
 
   @override

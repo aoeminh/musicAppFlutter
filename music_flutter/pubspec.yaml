@@ -22,7 +22,7 @@ dependencies:
   podcast_search:
     git:
       url: https://github.com/amugofjava/podcast_search.git
-      ref: 9cdcd9d3ee9fc25406823109810e8a5ad707ebaa
+      ref: 4390c0a70499477dc0b03d3a6d6529b515bfb816
   audio_service: ^0.11.2
   provider: 4.0.0
   just_audio: ^0.1.10
@@ -30,6 +30,7 @@ dependencies:
   cached_network_image: ^2.2.0+1
   logging: ^0.11.4
   rxdart: ^0.24.1
+  sembast: ^2.4.7+4
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2

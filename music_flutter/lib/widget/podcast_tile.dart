@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:music_flutter/model/podcast.dart';
 
 class PodcastTile extends StatelessWidget {
-  final PodcastMusic podcast;
+  final Podcast podcast;
 
   const PodcastTile({Key key, this.podcast}) : super(key: key);
   @override

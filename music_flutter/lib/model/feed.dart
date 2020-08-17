@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'podcast.dart';
 
 class Feed {
-  final PodcastMusic podcast;
+  final Podcast podcast;
   String imageUrl;
   String thumbImageUrl;
   bool refresh;

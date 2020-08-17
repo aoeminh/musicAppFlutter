@@ -7,7 +7,7 @@ import 'package:podcast_search/podcast_search.dart' as search;
 
 import 'episode.dart';
 
-class PodcastMusic {
+class Podcast {
   int id;
   final String guid;
   final String url;
@@ -20,7 +20,7 @@ class PodcastMusic {
   DateTime subscribedDate;
   List<Episode> episodes;
 
-  PodcastMusic({
+  Podcast({
     @required this.guid,
     @required this.url,
     @required this.link,
@@ -36,7 +36,7 @@ class PodcastMusic {
     episodes ??= [];
   }
 
-  PodcastMusic.fromSearchResultItem(search.Item item)
+  Podcast.fromSearchResultItem(search.Item item)
       : guid = item.guid,
         url = item.feedUrl,
         link = item.feedUrl,
@@ -59,7 +59,7 @@ class PodcastMusic {
     };
   }
 
-  static PodcastMusic fromMap(int key, Map<String, dynamic> podcast) {
+  static Podcast fromMap(int key, Map<String, dynamic> podcast) {
     final sds = podcast['subscribedDate'] as String;
     DateTime sd;
 
@@ -67,7 +67,7 @@ class PodcastMusic {
       sd = DateTime.fromMicrosecondsSinceEpoch(int.parse(podcast['subscribedDate'] as String));
     }
 
-    return PodcastMusic(
+    return Podcast(
       id: key,
       guid: podcast['guid'] as String,
       link: podcast['link'] as String,
@@ -85,7 +85,7 @@ class PodcastMusic {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is PodcastMusic && runtimeType == other.runtimeType && guid == other.guid && url == other.url;
+      identical(this, other) || other is Podcast && runtimeType == other.runtimeType && guid == other.guid && url == other.url;
 
   @override
   int get hashCode => guid.hashCode ^ url.hashCode;

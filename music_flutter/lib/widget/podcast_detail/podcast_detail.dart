@@ -1,19 +1,30 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:music_flutter/generated/l10n.dart';
+import 'package:music_flutter/model/feed.dart';
 import 'package:music_flutter/model/podcast.dart';
+import 'package:music_flutter/widget/podcast_detail/bloc/podcast_bloc.dart';
 import 'package:music_flutter/widget/podcast_detail/espisode.dart';
 
 class PodcastDetail extends StatefulWidget {
-  final PodcastMusic podcastMusic;
+  final Podcast podcastMusic;
+  final PodcastBloc bloc;
 
-  const PodcastDetail({Key key, this.podcastMusic}) : super(key: key);
+  const PodcastDetail({Key key, this.podcastMusic, this.bloc})
+      : super(key: key);
 
   @override
   _PodcastDetailState createState() => _PodcastDetailState();
 }
 
 class _PodcastDetailState extends State<PodcastDetail> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.bloc.load(Feed(podcast: widget.podcastMusic));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
