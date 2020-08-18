@@ -23,31 +23,38 @@ class _EpisodeWidgetState extends State<EpisodeWidget> {
       ),
       title: Text(widget.espisode.title),
       subtitle: Text(widget.espisode.author),
-      trailing: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          Icon(Icons.file_download),
-          Icon(Icons.play_circle_outline)
-        ],
+      trailing: SizedBox(
+        width: 70,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            Icon(Icons.file_download),
+            Icon(Icons.play_circle_outline)
+          ],
+        ),
       ),
       children: <Widget>[
-        Text(widget.espisode.description),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: 4.0,
+          ),
+          child: Text(widget.espisode.description,overflow: TextOverflow.ellipsis,
+          maxLines: 10,),
+        ),
         ButtonBar(
+          alignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             Column(
               children: <Widget>[
                 Icon(Icons.delete),
-                Text(
-                  S.of(context).delete_button_label
-                )
+                Text(S.of(context).delete_label)
               ],
             ),
             Column(
               children: <Widget>[
                 Icon(Icons.bookmark_border),
-                Text(
-                    S.of(context).mark_unplayed_label
-                )
+                Text(S.of(context).mark_unplayed_label)
               ],
             )
           ],

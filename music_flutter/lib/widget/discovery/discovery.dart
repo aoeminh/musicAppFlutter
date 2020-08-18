@@ -7,7 +7,6 @@ import 'package:podcast_search/podcast_search.dart';
 import 'package:provider/provider.dart';
 
 class DiscoveryWidget extends StatefulWidget {
-
   @override
   _DiscoveryWidgetState createState() => _DiscoveryWidgetState();
 }
@@ -21,7 +20,7 @@ class _DiscoveryWidgetState extends State<DiscoveryWidget> {
     // TODO: implement initState
     super.initState();
     print('build initState');
-    bloc = Provider.of<DiscoverBloc>(context,listen: false);
+    bloc = Provider.of<DiscoverBloc>(context, listen: false);
     bloc.getDisCover(DiscoverGetListEvent(10));
   }
 
@@ -29,6 +28,7 @@ class _DiscoveryWidgetState extends State<DiscoveryWidget> {
   Widget build(BuildContext context) {
     print('build discover');
     return StreamBuilder<DiscoveryState>(
+      initialData: DiscoveryLoadingState(),
       stream: bloc.discoverStream,
       builder: (context, AsyncSnapshot<DiscoveryState> snapshot) {
         return _buildBody(snapshot);
@@ -37,7 +37,6 @@ class _DiscoveryWidgetState extends State<DiscoveryWidget> {
   }
 
   _buildBody(AsyncSnapshot<DiscoveryState> snapshot) {
-    print('${snapshot.data}');
     var state = snapshot.data;
     if (state is DiscoveryLoadingState) {
       return SliverFillRemaining(
@@ -49,20 +48,17 @@ class _DiscoveryWidgetState extends State<DiscoveryWidget> {
         ),
       );
     } else if (state is DiscoveryResultState) {
-      SearchResult ssss =  state.result as SearchResult;
       return SliverFillRemaining(
-        child: PodcastList(result: state.result,)
-      );
-    }else{
+          child: PodcastList(
+        result: state.result,
+      ));
+    } else {
       return SliverFillRemaining(
         hasScrollBody: false,
-        child: Container(child: Text(
-            'error'
-        ),),
+        child: Container(
+          child: Text(''),
+        ),
       );
     }
   }
-
-
-
 }

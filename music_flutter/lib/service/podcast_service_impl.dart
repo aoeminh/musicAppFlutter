@@ -21,7 +21,7 @@ class PodcastServiceImpl extends PodcastService{
   /// recently and return that if available. If not, we'll make a call to load
   /// it from the network.
   @override
-  Future<Podcast> loadPodcast({@required Podcast podcast, bool refresh}) async {
+  Future<Podcast> loadPodcast({@required Podcast podcast, bool refresh= false}) async {
     if (podcast.id == null || refresh) {
       psapi.Podcast loadedPodcast;
       var title = '';

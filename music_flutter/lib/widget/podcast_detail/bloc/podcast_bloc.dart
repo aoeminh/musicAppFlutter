@@ -13,31 +13,37 @@ class PodcastBloc extends BlocBase {
 //  final AudioPlayerService audioPlayerService;
 //  final DownloadService downloadService;
 
-  PodcastBloc(this.podcastService){
+  PodcastBloc(this.podcastService) {
     init();
   }
 
   BehaviorSubject<Feed> _podcastFeed = BehaviorSubject();
   BehaviorSubject<BlocState<Podcast>> _podcastLoad = BehaviorSubject();
-
+  BehaviorSubject<List<Episode>> _podcastEpisode= BehaviorSubject();
 
   Function(Feed) get load => _podcastFeed.add;
+  Stream<BlocState<Podcast>> get podcastStream => _podcastLoad.stream;
+  Stream<List<Episode>> get listEpisode => _podcastEpisode.stream;
 
   List<Episode> _episodes;
   Podcast _podcast;
+
   init() {
     _listenPodcastLoad();
   }
 
-  _listenPodcastLoad() async{
-    _podcastFeed.listen((feed) async{
+  _listenPodcastLoad() async {
+    _podcastFeed.listen((feed) async {
       _podcastLoad.sink.add(BlocLoadingState());
       _episodes = [];
-      _podcast =await podcastService.loadPodcast(podcast: feed.podcast);
+      _podcast = await podcastService.loadPodcast(podcast: feed.podcast);
 
       _episodes = _podcast.episodes;
+
       _podcastLoad.sink.add(BlocResultState(_podcast));
-      print('Pushed podcast with ID ${_podcast.id} to the podcast stream with ${_episodes.length} episodes');
+      _podcastEpisode.sink.add(_episodes);
+      print(
+          'Pushed podcast with ID ${_podcast.id} to the podcast stream with ${_episodes.length} episodes');
     });
   }
 
@@ -45,5 +51,6 @@ class PodcastBloc extends BlocBase {
   void dispose() {
     _podcastFeed.close();
     _podcastLoad.close();
+    _podcastEpisode.close();
   }
 }

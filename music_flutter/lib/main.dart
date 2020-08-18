@@ -13,6 +13,7 @@ import 'package:music_flutter/widget/discovery/bloc/discover_block.dart';
 import 'package:music_flutter/widget/discovery/discovery.dart';
 import 'package:music_flutter/widget/download/download.dart';
 import 'package:music_flutter/widget/library/library_widget.dart';
+import 'package:music_flutter/widget/podcast_detail/bloc/podcast_bloc.dart';
 import 'package:music_flutter/widget/search/search.dart';
 import 'package:podcast_search/podcast_search.dart';
 import 'package:provider/provider.dart';
@@ -56,6 +57,10 @@ class MusicApp extends StatelessWidget {
         Provider<DiscoverBloc>(
           create: (_) => DiscoverBloc(podcastService),
           dispose: (_, value) => value.dispose(),
+        ),
+        Provider<PodcastBloc>(
+          create: (_)=> PodcastBloc(podcastService),
+          dispose: (_,value) => value.dispose(),
         )
       ],
       child: MaterialApp(
