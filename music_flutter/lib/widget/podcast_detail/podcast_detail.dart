@@ -103,8 +103,14 @@ class _PodcastDetailState extends State<PodcastDetail> {
           if (snapshot.hasData) {
             return SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
-                return EpisodeWidget(
-                  espisode: snapshot.data[index],
+                return InkWell(
+                  onTap: (){
+
+                  },
+                  child: EpisodeWidget(
+                    espisode: snapshot.data[index],
+
+                  ),
                 );
               }, childCount: snapshot.data.length),
             );

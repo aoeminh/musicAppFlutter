@@ -19,14 +19,12 @@ class _DiscoveryWidgetState extends State<DiscoveryWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print('build initState');
     bloc = Provider.of<DiscoverBloc>(context, listen: false);
     bloc.getDisCover(DiscoverGetListEvent(10));
   }
 
   @override
   Widget build(BuildContext context) {
-    print('build discover');
     return StreamBuilder<DiscoveryState>(
       initialData: DiscoveryLoadingState(),
       stream: bloc.discoverStream,

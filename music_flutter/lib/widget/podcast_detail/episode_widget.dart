@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:music_flutter/generated/l10n.dart';
 import 'package:music_flutter/model/episode.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class EpisodeWidget extends StatefulWidget {
   final Episode espisode;
@@ -15,21 +17,44 @@ class EpisodeWidget extends StatefulWidget {
 class _EpisodeWidgetState extends State<EpisodeWidget> {
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return ExpansionTile(
-      key: Key('${widget.espisode.guid}'),
+
       leading: CachedNetworkImage(
         imageUrl: widget.espisode.thumbImageUrl,
-        placeholder: (context, url) => CircularProgressIndicator(),
+        placeholder: (context, url) => Center(
+            child: Container()),
       ),
-      title: Text(widget.espisode.title),
-      subtitle: Text(widget.espisode.author),
+      title: Text(widget.espisode.title??'',style: textTheme.body2.copyWith(fontWeight: FontWeight.bold),),
+      subtitle: Text(widget.espisode.author ?? '',style: textTheme.caption),
       trailing: SizedBox(
         width: 70,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            Icon(Icons.file_download),
-            Icon(Icons.play_circle_outline)
+            Container(
+              padding: EdgeInsets.all(0.0),
+              height: 40.0,
+              width: 38.0,
+              child: Stack(
+               children: <Widget>[
+                 CircularPercentIndicator(
+                     radius: 38.0,
+                     lineWidth: 2.0,
+                     percent: 0.8,
+                     center: Icon(
+                       Icons.file_download,
+                       size: 28,color: Theme.of(context).primaryColor,)),
+//                 const SpinKitRing(
+//                   lineWidth: 2.0,
+//                   color: Colors.blue,
+//                   size: 38.0,
+//                 ),
+               ],
+              ),
+            ),
+
+            Icon(Icons.play_circle_outline,  color: Theme.of(context).primaryColor)
           ],
         ),
       ),
@@ -39,8 +64,11 @@ class _EpisodeWidgetState extends State<EpisodeWidget> {
             horizontal: 16.0,
             vertical: 4.0,
           ),
-          child: Text(widget.espisode.description,overflow: TextOverflow.ellipsis,
-          maxLines: 10,),
+          child: Text(
+            widget.espisode.description,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 10,
+          ),
         ),
         ButtonBar(
           alignment: MainAxisAlignment.spaceAround,

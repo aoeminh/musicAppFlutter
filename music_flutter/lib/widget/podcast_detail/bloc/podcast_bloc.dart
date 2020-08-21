@@ -36,6 +36,7 @@ class PodcastBloc extends BlocBase {
     _podcastFeed.listen((feed) async {
       _podcastLoad.sink.add(BlocLoadingState());
       _episodes = [];
+      _podcastEpisode.sink.add(_episodes);
       _podcast = await podcastService.loadPodcast(podcast: feed.podcast);
 
       _episodes = _podcast.episodes;
@@ -49,6 +50,7 @@ class PodcastBloc extends BlocBase {
 
   @override
   void dispose() {
+    print('PodcastBloc dispose');
     _podcastFeed.close();
     _podcastLoad.close();
     _podcastEpisode.close();

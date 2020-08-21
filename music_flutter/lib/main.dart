@@ -5,7 +5,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logging/logging.dart';
 import 'package:music_flutter/api/podcast_api.dart';
 import 'package:music_flutter/api/podcast_api_impl.dart';
+import 'package:music_flutter/bloc/audio_bloc.dart';
 import 'package:music_flutter/bloc/page_bloc.dart';
+import 'package:music_flutter/service/audio/audio_service.dart';
+import 'package:music_flutter/service/audio/audio_service_impl.dart';
 import 'package:music_flutter/service/podcast_service.dart';
 import 'package:music_flutter/service/podcast_service_impl.dart';
 import 'package:music_flutter/themes.dart';
@@ -39,9 +42,11 @@ class MusicApp extends StatelessWidget {
   final PodCastApiImpl podCastApi;
   final Repository repository;
   PodcastService podcastService;
+  AudioPlayerService audioPlayerService;
 
   MusicApp()
       : repository = SembastRepository(),
+        audioPlayerService = AudioPlayerServiceImpl(),
         podCastApi = PodCastApiImpl() {
     this.podcastService = PodcastServiceImpl(podCastApi, repository);
   }
@@ -61,6 +66,10 @@ class MusicApp extends StatelessWidget {
         Provider<PodcastBloc>(
           create: (_)=> PodcastBloc(podcastService),
           dispose: (_,value) => value.dispose(),
+        ),
+        Provider<AudioBloc>(
+          create: (_) => AudioBloc(audioPlayerService: audioPlayerService),
+          dispose: (_, value) => value.dispose(),
         )
       ],
       child: MaterialApp(
@@ -195,17 +204,6 @@ class _MusicAppHomeState extends State<MusicAppHome> {
       });
 
   buildCurrentPage(int index) {
-    print('sss $index');
-//    switch (currentPage) {
-//      case 0:
-//        return LibraryWidget();
-//      case 1:
-//        return DiscoveryWidget();
-//      case 2:
-//        return DownloadWidget();
-//      default:
-//        return LibraryWidget();
-//    }
     if (index == 0) {
       return LibraryWidget();
     } else if (index == 1) {
