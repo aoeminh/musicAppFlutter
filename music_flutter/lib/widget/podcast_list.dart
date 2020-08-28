@@ -23,7 +23,6 @@ class PodcastList extends StatelessWidget {
           itemBuilder: (context, index) {
             final item = result.items[index];
             final podcast = Podcast.fromSearchResultItem(item);
-            print(' episode ${podcast.episodes}');
             return Hero(
               tag: 'Hl ${podcast.title}',
               child: Material(

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logging/logging.dart';
@@ -139,22 +140,24 @@ class _MusicAppHomeState extends State<MusicAppHome> {
         ));
   }
 
-  _buildBody(PageBlock pageBlock) => Column(
-        children: <Widget>[
-          Expanded(
-            child: CustomScrollView(slivers: <Widget>[
-              buildAppBar(),
-              StreamBuilder<int>(
-                initialData: 0,
-                stream: pageBlock.currentPage,
-                builder: (context, AsyncSnapshot<int> snapshot) {
-                  return buildCurrentPage(snapshot.data);
-                },
-              )
-            ]),
-          )
-        ],
-      );
+  _buildBody(PageBlock pageBlock) => AudioServiceWidget(
+    child: Column(
+          children: <Widget>[
+            Expanded(
+              child: CustomScrollView(slivers: <Widget>[
+                buildAppBar(),
+                StreamBuilder<int>(
+                  initialData: 0,
+                  stream: pageBlock.currentPage,
+                  builder: (context, AsyncSnapshot<int> snapshot) {
+                    return buildCurrentPage(snapshot.data);
+                  },
+                )
+              ]),
+            )
+          ],
+        ),
+  );
 
   buildAppBar() => SliverAppBar(
         floating: false,

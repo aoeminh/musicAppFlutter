@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:music_flutter/model/episode.dart';
 import 'package:music_flutter/service/audio/audio_service.dart';
@@ -43,12 +44,15 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
         startPosition.toString()
       ];
 
-      if (!AudioService.running) {
-        await startAudioService();
-      }
+//      if (!AudioService.running) {
+       await  _start();
 
-      await AudioService.customAction('play', trackDetail);
-      await AudioService.play();
+//      }
+//      print(trackDetail);
+//      print('customAction');
+
+//      await AudioService.customAction('track', trackDetail);
+//      await AudioService.play();
     }
   }
 
@@ -61,18 +65,38 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
   @override
   Future<void> stop() async {}
 
-
-
-  void initBackgroundTask() {
-    AudioServiceBackground.run(() => BackgroundPlayerTask());
-  }
-
-  Future<bool> startAudioService() async {
-    return AudioService.start(
-      backgroundTaskEntrypoint: initBackgroundTask,
-      androidNotificationIcon: 'mipmap/ic_launcher',
+  Future<void> _start() async {
+    var fs =await AudioService.start(
+      backgroundTaskEntrypoint: backgroundPlay,
+      androidResumeOnClick: true,
+      androidNotificationChannelName: 'Anytime Podcast Player',
+      androidNotificationColor: Colors.orange.value,
+      androidStopForegroundOnPause: true,
+      fastForwardInterval: Duration(seconds: 30),
     );
+    print('dddd $fs');
+  }
+  Future<bool> startAudioService() async {
+
+    AudioService.start(
+      backgroundTaskEntrypoint: backgroundPlay,
+      androidResumeOnClick: true,
+      androidNotificationChannelName: 'Anytime Podcast Player',
+      androidNotificationColor: Colors.orange.value,
+      androidNotificationIcon: 'drawable/ic_stat_name',
+      androidStopForegroundOnPause: true,
+      fastForwardInterval: Duration(seconds: 30),
+    ).then((value){
+      print('dddd $value');
+    }).catchError((){
+      print('error');
+    });
+
   }
 
   Stream<AudioState> get audioStateStream => _audioStateSubject.stream;
+}
+
+void backgroundPlay() {
+  AudioServiceBackground.run(() => BackgroundPlayerTask());
 }

@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:music_flutter/bloc/audio_bloc.dart';
 import 'package:music_flutter/generated/l10n.dart';
 import 'package:music_flutter/model/episode.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class EpisodeWidget extends StatefulWidget {
   final Episode espisode;
@@ -17,6 +19,7 @@ class EpisodeWidget extends StatefulWidget {
 class _EpisodeWidgetState extends State<EpisodeWidget> {
   @override
   Widget build(BuildContext context) {
+    final audioBloc = Provider.of<AudioBloc>(context);
     final textTheme = Theme.of(context).textTheme;
     return ExpansionTile(
 
@@ -54,7 +57,11 @@ class _EpisodeWidgetState extends State<EpisodeWidget> {
               ),
             ),
 
-            Icon(Icons.play_circle_outline,  color: Theme.of(context).primaryColor)
+            InkWell(
+                onTap: (){
+                  audioBloc.play(widget.espisode);
+                },
+                child: Icon(Icons.play_circle_outline,  color: Theme.of(context).primaryColor))
           ],
         ),
       ),
