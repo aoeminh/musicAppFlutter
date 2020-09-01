@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:music_flutter/generated/l10n.dart';
 import 'package:music_flutter/widget/discovery/bloc/discover_block.dart';
 import 'package:music_flutter/widget/discovery/bloc/discover_event_state.dart';
 import 'package:music_flutter/widget/podcast_list.dart';
@@ -46,10 +47,28 @@ class _DiscoveryWidgetState extends State<DiscoveryWidget> {
         ),
       );
     } else if (state is DiscoveryResultState) {
-      return SliverFillRemaining(
-          child: PodcastList(
-        result: state.result,
-      ));
+      if(state.result.items.isNotEmpty){
+        return SliverFillRemaining(
+            child: PodcastList(
+              result: state.result,
+              bloc: bloc,
+            ));
+      }else{
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[Text(S.of(context).no_search_results_message),
+            FlatButton(
+              onPressed: (){
+                bloc.getDisCover(DiscoverGetListEvent(10));
+              },
+              child: Text('Refresh'),
+            )
+
+          ],
+        );
+      }
+
     } else {
       return SliverFillRemaining(
         hasScrollBody: false,

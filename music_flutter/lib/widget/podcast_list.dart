@@ -13,14 +13,12 @@ import 'podcast_tile.dart';
 
 class PodcastList extends StatelessWidget {
   final podapi.SearchResult result;
-
-  const PodcastList({Key key, this.result}) : super(key: key);
+  final DiscoverBloc bloc;
+  const PodcastList({Key key, this.result, this.bloc}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final discoveryBloc = Provider.of<DiscoverBloc>(context);
     final podcastBloc = Provider.of<PodcastBloc>(context);
-    if (result.items.isNotEmpty) {
       return ListView.builder(
           itemCount: result.items.length,
           itemBuilder: (context, index) {
@@ -42,22 +40,8 @@ class PodcastList extends StatelessWidget {
                 ),
               ),
             );
-          });
-    } else {
-      return Column(
 
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[Text(S.of(context).no_search_results_message),
-        FlatButton(
-          onPressed: (){
-            discoveryBloc.getDisCover(DiscoverGetListEvent(10));
-          },
-          child: Text('Refresh'),
-        )
 
-        ],
-      );
-    }
+    });
   }
 }

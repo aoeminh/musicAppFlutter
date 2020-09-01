@@ -16,6 +16,7 @@ class DiscoverBloc extends BlocBase {
   }
 
   Stream<DiscoveryState> getDiscovery(DiscoverEvent event) async*{
+    print('sfs');
     yield DiscoveryLoadingState();
     if(event is DiscoverGetListEvent) {
       _result ??= await podcastService.charts(event.count);

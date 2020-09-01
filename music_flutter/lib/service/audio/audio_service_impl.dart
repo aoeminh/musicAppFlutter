@@ -106,7 +106,7 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
     AudioService.playbackStateStream.listen((state)async {
       if (state != null && state is PlaybackState) {
         final ps = state.processingState;
-        print(' Received state change from audio service ${ps.toString()}');
+        print(' Received state change from audio service ${ps.toString()} state.currentPosition ${state.currentPosition}');
       }
     });
   }
