@@ -37,7 +37,7 @@ void main() {
   runApp(MusicApp());
 }
 
-class MusicApp extends StatelessWidget {
+class MusicApp extends StatelessWidget  {
   // This widget is the root of your application.
   final themes = ThemeApp.primary();
   final PodCastApiImpl podCastApi;
@@ -98,13 +98,26 @@ class MusicAppHome extends StatefulWidget {
   _MusicAppHomeState createState() => _MusicAppHomeState();
 }
 
-class _MusicAppHomeState extends State<MusicAppHome> {
+class _MusicAppHomeState extends State<MusicAppHome> with WidgetsBindingObserver {
   Logger log;
 
   @override
   void initState() {
     super.initState();
     log = Logger('_MyHomePageState');
+  }
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('didChangeAppLifecycleState $state');
+    final audioBloc = Provider.of<AudioBloc>(context, listen: false);
+    if(state == AppLifecycleState.resumed){
+      audioBloc.changeLifecycle(state);
+    }else if(state == AppLifecycleState.paused){
+      audioBloc.changeLifecycle(state);
+    }
+
   }
 
   @override

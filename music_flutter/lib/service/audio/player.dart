@@ -11,32 +11,81 @@ class Player {
   int _position;
   List<MediaControl> controls = [];
   AudioProcessingState _playbackState;
-  bool _playing= false;
+  bool _playing = false;
   final Completer _completer = Completer<dynamic>();
-  Future<void> play()async{
-    print('player play');
-    await _audioPlayer.setUrl(_uri);
-    setStatePlaying();
 
+  Future<void> play() async {
+    print('player $_uri');
+    await _audioPlayer.setUrl(_uri);
+    _audioPlayer.play();
+    if (_audioPlayer.playbackEvent.state != AudioPlaybackState.connecting ||
+        _audioPlayer.playbackEvent.state != AudioPlaybackState.none) {
+      try {
+
+      } catch (e) {
+        print('State error');
+      }
+    }
+
+    if (_position > 0) {
+      log.fine('moving position to ${_position}');
+      await _audioPlayer.seek(Duration(milliseconds: _position));
+    }
+    setStatePlaying();
   }
-  Future<void> setStatePlaying()async{
+
+  Future<void> pause()async{
+    print('onPause1');
+    log.fine("pause");
+    await _audioPlayer.pause();
+    await setPauseState();
+  }
+
+  Future<void> setStatePlaying() async {
+    print('setStatePlaying');
     _playbackState = AudioProcessingState.ready;
-//    controls =
-//    [MediaControl.skipToPrevious, MediaControl.pause, MediaControl.skipToNext];
+    controls = [
+      MediaControl.skipToPrevious,
+      MediaControl.pause,
+      MediaControl.skipToNext
+    ];
     _playing = true;
     await _setState();
   }
 
-  Future<void> _setState()async{
+  Future<void> setPauseState()async{
+    print('setPauseState');
+    _playbackState = AudioProcessingState.ready;
+    controls= [  MediaControl.skipToPrevious,
+      MediaControl.play,
+      MediaControl.skipToNext];
+    await _setState();
+  }
+
+  Future<void> _setStoppedState() async {
+    log.fine('setStoppedState()');
+    print('setStoppedState');
+    await _audioPlayer.stop();
+    await _audioPlayer.dispose();
+
+    _playbackState = AudioProcessingState.stopped;
+
+    await _setState();
+
+    _completer.complete();
+  }
+  Future<void> _setState() async {
     log.fine('_setState() to ');
-    await AudioServiceBackground.setState(controls: controls, processingState: null, playing: true);
+    await AudioServiceBackground.setState(
+        controls: controls, processingState: _playbackState, playing: true);
   }
 
   Future<void> start() async {
     log.fine('start()');
 
-    var playerStateSubscription =
-    _audioPlayer.playbackStateStream.where((state) => state == AudioPlaybackState.completed).listen((state) async {
+    var playerStateSubscription = _audioPlayer.playbackStateStream
+        .where((state) => state == AudioPlaybackState.completed)
+        .listen((state) async {
       await complete();
     });
 
@@ -54,7 +103,6 @@ class Player {
     await _audioPlayer.dispose();
   }
 
-
   Future<void> complete() async {
     log.fine('complete()');
 
@@ -65,27 +113,15 @@ class Player {
     await _setStoppedState();
   }
 
-  Future<void> _setStoppedState() async {
-    log.fine('setStoppedState()');
-
-    await _audioPlayer.stop();
-    await _audioPlayer.dispose();
-
-    _playbackState = AudioProcessingState.stopped;
-
-
-    await _setState();
-
-    _completer.complete();
-  }
   Future<void> setMediaItem(dynamic args) async {
     _uri = args[3];
     _position = int.parse(args[5]);
+    print('setMediaItem $_position');
     await AudioServiceBackground.setMediaItem(
       MediaItem(
         id: '1000',
         title: args[1],
-        artUri: _uri,
+        artUri: args[2],
         album: args[0],
       ),
     );

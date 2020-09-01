@@ -11,7 +11,7 @@ class PodCastApiImpl extends PodCastApi {
   }
 
   Future<SearchResult> _chart(int size){
-    return api.charts(limit: size??10).timeout(Duration(seconds: 10));
+    return api.charts(limit: size??10).timeout(Duration(seconds: 20));
   }
 
   @override

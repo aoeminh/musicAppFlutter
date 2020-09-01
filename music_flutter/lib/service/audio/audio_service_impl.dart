@@ -11,23 +11,22 @@ import 'background_audio_player.dart';
 
 class AudioPlayerServiceImpl extends AudioPlayerService {
   final log = Logger('MobileAudioPlayerService');
-
+  Episode _episode;
   final BehaviorSubject<AudioState> _audioStateSubject =
       BehaviorSubject.seeded(AudioState.none);
 
-  @override
-  Future<void> fastForward() {
-    return null;
+  AudioPlayerServiceImpl() {
+    handleAudioServiceTransitions();
   }
 
   @override
-  Future<void> pause() {
-    // TODO: implement pause
-    return null;
-  }
+  Future<void> fastForward() => AudioService.fastForward();
 
   @override
-  Future<void> play({Episode episode}) async {
+  Future<void> pause() => AudioService.pause();
+
+  @override
+  Future<void> playEpisode({Episode episode}) async {
     if (episode.guid != '') {
       var trackDetail = <String>[];
       var startPosition = 0;
@@ -44,29 +43,39 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
         startPosition.toString()
       ];
 
-//      if (!AudioService.running) {
-       await  _start();
+      if (!AudioService.running) {
+        await _start();
+      }
+      _episode = episode;
+      await AudioService.customAction('play', trackDetail);
 
-//      }
-//      print(trackDetail);
-//      print('customAction');
-
-//      await AudioService.customAction('track', trackDetail);
-//      await AudioService.play();
+      print('after');
+      await AudioService.play();
     }
   }
 
   @override
-  Future<void> rewind() {
-    // TODO: implement rewind
-    return null;
+  Future<void> rewind() => AudioService.rewind();
+
+  @override
+  Future<void> resume() async {
+    await AudioService.connect();
+
   }
 
   @override
-  Future<void> stop() async {}
+  Future<void> play() => AudioService.play();
+
+  @override
+  Future<void> stop() {}
+
+  @override
+  Future<void> suspend() async {
+    await AudioService.disconnect();
+  }
 
   Future<void> _start() async {
-    var fs =await AudioService.start(
+    var fs = await AudioService.start(
       backgroundTaskEntrypoint: backgroundPlay,
       androidResumeOnClick: true,
       androidNotificationChannelName: 'Anytime Podcast Player',
@@ -76,8 +85,8 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
     );
     print('dddd $fs');
   }
-  Future<bool> startAudioService() async {
 
+  Future<bool> startAudioService() async {
     AudioService.start(
       backgroundTaskEntrypoint: backgroundPlay,
       androidResumeOnClick: true,
@@ -86,12 +95,20 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
       androidNotificationIcon: 'drawable/ic_stat_name',
       androidStopForegroundOnPause: true,
       fastForwardInterval: Duration(seconds: 30),
-    ).then((value){
+    ).then((value) {
       print('dddd $value');
-    }).catchError((){
+    }).catchError(() {
       print('error');
     });
+  }
 
+  handleAudioServiceTransitions() async {
+    AudioService.playbackStateStream.listen((state)async {
+      if (state != null && state is PlaybackState) {
+        final ps = state.processingState;
+        print(' Received state change from audio service ${ps.toString()}');
+      }
+    });
   }
 
   Stream<AudioState> get audioStateStream => _audioStateSubject.stream;

@@ -10,7 +10,7 @@ class BackgroundPlayerTask extends BackgroundAudioTask {
   Player player = Player();
 
   @override
-  Future<void> onPlay() async{
+  Future<void> onPlay() async {
     print('onPlay');
     player.play();
   }
@@ -18,14 +18,16 @@ class BackgroundPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onPause() {
     print('onPause');
-//    return super.onPause();
+    player.pause();
+    return super.onPause();
   }
+
 
   @override
   Future<void> onStart(Map<String, dynamic> params) {
     print('onStart');
     player.start();
- }
+  }
 
   @override
   Future<void> onStop() {
@@ -58,13 +60,11 @@ class BackgroundPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<dynamic> onCustomAction(String name, dynamic arguments) async {
-    log.info('onCustomAction');
     print('onCustomAction');
     switch (name) {
       case customActionPlay:
         await player.setMediaItem(arguments);
-
+        break;
     }
-
   }
 }
