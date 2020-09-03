@@ -19,7 +19,6 @@ class BackgroundPlayerTask extends BackgroundAudioTask {
   Future<void> onPause() {
     print('onPause');
     player.pause();
-    return super.onPause();
   }
 
 

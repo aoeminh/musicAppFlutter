@@ -5,8 +5,8 @@ import 'package:music_flutter/model/episode.dart';
 import 'package:music_flutter/model/feed.dart';
 import 'package:music_flutter/model/podcast.dart';
 import 'package:music_flutter/state/bloc_state.dart';
-import 'package:music_flutter/widget/podcast_detail/bloc/podcast_bloc.dart';
-import 'package:music_flutter/widget/podcast_detail/episode_widget.dart';
+import 'bloc/podcast_bloc.dart';
+import '../podcast_detail/episode_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../decorate_icon_button.dart';

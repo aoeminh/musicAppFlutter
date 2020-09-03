@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logging/logging.dart';
+import 'package:pedantic/pedantic.dart';
 
 class Player {
   AudioPlayer _audioPlayer = AudioPlayer();
@@ -17,11 +18,11 @@ class Player {
   Future<void> play() async {
     print('player $_uri');
     await _audioPlayer.setUrl(_uri);
-    _audioPlayer.play();
     if (_audioPlayer.playbackEvent.state != AudioPlaybackState.connecting ||
         _audioPlayer.playbackEvent.state != AudioPlaybackState.none) {
       try {
-
+      print(' _audioPlayer.playbackEvent.state ${_audioPlayer.playbackEvent.state}');
+      unawaited(_audioPlayer.play());
       } catch (e) {
         print('State error');
       }
@@ -31,7 +32,7 @@ class Player {
       log.fine('moving position to ${_position}');
       await _audioPlayer.seek(Duration(milliseconds: _position));
     }
-    setStatePlaying();
+    await setStatePlaying();
   }
 
   Future<void> pause()async{

@@ -1,10 +1,7 @@
-import 'dart:math';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logging/logging.dart';
-import 'package:music_flutter/api/podcast_api.dart';
 import 'package:music_flutter/api/podcast_api_impl.dart';
 import 'package:music_flutter/bloc/audio_bloc.dart';
 import 'package:music_flutter/bloc/page_bloc.dart';
@@ -13,18 +10,18 @@ import 'package:music_flutter/service/audio/audio_service_impl.dart';
 import 'package:music_flutter/service/podcast_service.dart';
 import 'package:music_flutter/service/podcast_service_impl.dart';
 import 'package:music_flutter/themes.dart';
-import 'package:music_flutter/widget/discovery/bloc/discover_block.dart';
-import 'package:music_flutter/widget/discovery/discovery.dart';
-import 'package:music_flutter/widget/download/download.dart';
-import 'package:music_flutter/widget/library/library_widget.dart';
-import 'package:music_flutter/widget/podcast_detail/bloc/podcast_bloc.dart';
-import 'package:music_flutter/widget/search/search.dart';
 import 'package:podcast_search/podcast_search.dart';
 import 'package:provider/provider.dart';
 
 import 'generated/l10n.dart';
 import 'repository/repository.dart';
 import 'repository/sembast/sembast_repository.dart';
+import 'ui/discovery/bloc/discover_block.dart';
+import 'ui/discovery/discovery.dart';
+import 'ui/download/download.dart';
+import 'ui/library/library_widget.dart';
+import 'ui/podcast_detail/bloc/podcast_bloc.dart';
+import 'ui/search/search.dart';
 
 void main() {
   Logger.root.level = Level.FINE;

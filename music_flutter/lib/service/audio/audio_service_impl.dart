@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -43,13 +41,14 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
         startPosition.toString()
       ];
 
+       _audioStateSubject.add(AudioState.buffering);
+
       if (!AudioService.running) {
         await _start();
       }
       _episode = episode;
       await AudioService.customAction('play', trackDetail);
 
-      print('after');
       await AudioService.play();
     }
   }
@@ -59,15 +58,15 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
 
   @override
   Future<void> resume() async {
+    print('resume');
     await AudioService.connect();
-
   }
 
   @override
   Future<void> play() => AudioService.play();
 
   @override
-  Future<void> stop() {}
+  Future<void> stop()async {}
 
   @override
   Future<void> suspend() async {
@@ -75,7 +74,7 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
   }
 
   Future<void> _start() async {
-    var fs = await AudioService.start(
+    await AudioService.start(
       backgroundTaskEntrypoint: backgroundPlay,
       androidResumeOnClick: true,
       androidNotificationChannelName: 'Anytime Podcast Player',
@@ -83,32 +82,74 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
       androidStopForegroundOnPause: true,
       fastForwardInterval: Duration(seconds: 30),
     );
-    print('dddd $fs');
-  }
-
-  Future<bool> startAudioService() async {
-    AudioService.start(
-      backgroundTaskEntrypoint: backgroundPlay,
-      androidResumeOnClick: true,
-      androidNotificationChannelName: 'Anytime Podcast Player',
-      androidNotificationColor: Colors.orange.value,
-      androidNotificationIcon: 'drawable/ic_stat_name',
-      androidStopForegroundOnPause: true,
-      fastForwardInterval: Duration(seconds: 30),
-    ).then((value) {
-      print('dddd $value');
-    }).catchError(() {
-      print('error');
-    });
   }
 
   handleAudioServiceTransitions() async {
-    AudioService.playbackStateStream.listen((state)async {
+    AudioService.playbackStateStream.listen((state) async {
       if (state != null && state is PlaybackState) {
         final ps = state.processingState;
-        print(' Received state change from audio service ${ps.toString()} state.currentPosition ${state.currentPosition}');
+        print(
+            ' Received state change from audio service ${ps.toString()} state.currentPosition ${state.currentPosition}');
+        switch (ps) {
+          case AudioProcessingState.none:
+            // TODO: Handle this case.
+            break;
+          case AudioProcessingState.connecting:
+            // TODO: Handle this case.
+            break;
+          case AudioProcessingState.ready:
+            if(state.playing){
+              _onPlay();
+            }else{
+              _onPause();
+            }
+
+            break;
+          case AudioProcessingState.buffering:
+            await _onBuffering();
+            break;
+          case AudioProcessingState.fastForwarding:
+            // TODO: Handle this case.
+            break;
+          case AudioProcessingState.rewinding:
+            // TODO: Handle this case.
+            break;
+          case AudioProcessingState.skippingToPrevious:
+            // TODO: Handle this case.
+            break;
+          case AudioProcessingState.skippingToNext:
+            // TODO: Handle this case.
+            break;
+          case AudioProcessingState.skippingToQueueItem:
+            // TODO: Handle this case.
+            break;
+          case AudioProcessingState.completed:
+            // TODO: Handle this case.
+            break;
+          case AudioProcessingState.stopped:
+             _onStop();
+            break;
+          case AudioProcessingState.error:
+            // TODO: Handle this case.
+            break;
+        }
       }
     });
+  }
+  Future<void> _onBuffering() async {
+    _audioStateSubject.add(AudioState.buffering);
+  }
+
+  Future<void> _onPlay() async {
+    _audioStateSubject.add(AudioState.playing);
+  }
+
+  Future<void> _onPause() async {
+    _audioStateSubject.add(AudioState.pausing);
+  }
+
+  Future<void> _onStop() async {
+    _audioStateSubject.add(AudioState.stopped);
   }
 
   Stream<AudioState> get audioStateStream => _audioStateSubject.stream;

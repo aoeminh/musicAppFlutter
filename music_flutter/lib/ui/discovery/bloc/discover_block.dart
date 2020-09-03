@@ -1,6 +1,6 @@
 import 'package:music_flutter/bloc/bloc_base.dart';
 import 'package:music_flutter/service/podcast_service.dart';
-import 'package:music_flutter/widget/discovery/bloc/discover_event_state.dart';
+import 'discover_event_state.dart';
 import 'package:podcast_search/podcast_search.dart';
 import 'package:rxdart/rxdart.dart';
 

@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:music_flutter/bloc/audio_bloc.dart';
 import 'package:music_flutter/generated/l10n.dart';
 import 'package:music_flutter/model/episode.dart';
+import 'package:music_flutter/ui/widget/play_control.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -22,16 +25,17 @@ class _EpisodeWidgetState extends State<EpisodeWidget> {
     final audioBloc = Provider.of<AudioBloc>(context);
     final textTheme = Theme.of(context).textTheme;
     return ExpansionTile(
-
       leading: CachedNetworkImage(
         imageUrl: widget.espisode.thumbImageUrl,
-        placeholder: (context, url) => Center(
-            child: Container()),
+        placeholder: (context, url) => Center(child: Container()),
       ),
-      title: Text(widget.espisode.title??'',style: textTheme.body2.copyWith(fontWeight: FontWeight.bold),),
-      subtitle: Text(widget.espisode.author ?? '',style: textTheme.caption),
+      title: Text(
+        widget.espisode.title ?? '',
+        style: textTheme.body2.copyWith(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(widget.espisode.author ?? '', style: textTheme.caption),
       trailing: SizedBox(
-        width: 70,
+        width: 90,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
@@ -40,28 +44,27 @@ class _EpisodeWidgetState extends State<EpisodeWidget> {
               height: 40.0,
               width: 38.0,
               child: Stack(
-               children: <Widget>[
-                 CircularPercentIndicator(
-                     radius: 38.0,
-                     lineWidth: 2.0,
-                     percent: 0.8,
-                     center: Icon(
-                       Icons.file_download,
-                       size: 28,color: Theme.of(context).primaryColor,)),
+                children: <Widget>[
+                  CircularPercentIndicator(
+                      radius: 38.0,
+                      lineWidth: 2.0,
+                      percent: 0.8,
+                      center: Icon(
+                        Icons.file_download,
+                        size: 28,
+                        color: Theme.of(context).primaryColor,
+                      )),
 //                 const SpinKitRing(
 //                   lineWidth: 2.0,
 //                   color: Colors.blue,
 //                   size: 38.0,
 //                 ),
-               ],
+                ],
               ),
             ),
-
-            InkWell(
-                onTap: (){
-                  audioBloc.play(widget.espisode);
-                },
-                child: Icon(Icons.play_circle_outline,  color: Theme.of(context).primaryColor))
+            PlayControl(
+              episode: widget.espisode,
+            )
           ],
         ),
       ),

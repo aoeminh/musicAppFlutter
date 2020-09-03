@@ -14,7 +14,9 @@ class AudioBloc extends BlocBase {
   }
 
   BehaviorSubject<Episode> _playSubject = BehaviorSubject();
+
   BehaviorSubject<AppLifecycleState> _appLifeCycleSubject = BehaviorSubject();
+
 
   handlePlayEpisode() {
     _playSubject.listen((episode) {
@@ -49,4 +51,7 @@ class AudioBloc extends BlocBase {
   Stream<Episode> get playStream => _playSubject.stream;
 
   Stream<AppLifecycleState> get lifecycleStream => _appLifeCycleSubject.stream;
+
+  Stream<AudioState> get audioStateStream => audioPlayerService.audioStateStream;
+
 }

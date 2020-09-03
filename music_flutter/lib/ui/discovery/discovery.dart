@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:music_flutter/generated/l10n.dart';
-import 'package:music_flutter/widget/discovery/bloc/discover_block.dart';
-import 'package:music_flutter/widget/discovery/bloc/discover_event_state.dart';
-import 'package:music_flutter/widget/podcast_list.dart';
-import 'package:podcast_search/podcast_search.dart';
+import 'bloc/discover_block.dart';
+import 'bloc/discover_event_state.dart';
+import '../podcast_list.dart';
 import 'package:provider/provider.dart';
 
 class DiscoveryWidget extends StatefulWidget {

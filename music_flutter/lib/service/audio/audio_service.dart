@@ -34,4 +34,6 @@ abstract class AudioPlayerService {
 
   /// Call when the app is about to be suspended.
   Future<void> suspend();
+
+  Stream<AudioState> audioStateStream;
 }
