@@ -12,16 +12,20 @@ class Player {
   int _position;
   List<MediaControl> controls = [];
   AudioProcessingState _playbackState;
-  bool _playing = false;
+  bool _isPlaying = false;
+  bool _isLoadTrack = false;
   final Completer _completer = Completer<dynamic>();
 
   Future<void> play() async {
-    print('player $_uri');
-    await _audioPlayer.setUrl(_uri);
+    if(_isLoadTrack){
+      await _audioPlayer.setUrl(_uri);
+      _isLoadTrack = false;
+    }
+
     if (_audioPlayer.playbackEvent.state != AudioPlaybackState.connecting ||
         _audioPlayer.playbackEvent.state != AudioPlaybackState.none) {
       try {
-      print(' _audioPlayer.playbackEvent.state ${_audioPlayer.playbackEvent.state}');
+      print('_audioPlayer.playbackEvent.state ${_audioPlayer.playbackEvent.state}');
       unawaited(_audioPlayer.play());
       } catch (e) {
         print('State error');
@@ -29,17 +33,27 @@ class Player {
     }
 
     if (_position > 0) {
-      log.fine('moving position to ${_position}');
+      print('moving position to ${_position}');
+
       await _audioPlayer.seek(Duration(milliseconds: _position));
     }
     await setStatePlaying();
   }
 
   Future<void> pause()async{
-    print('onPause1');
-    log.fine("pause");
+    print('player pause');
     await _audioPlayer.pause();
     await setPauseState();
+  }
+
+  Future<void> onClick() async {
+    if (_uri.isNotEmpty) {
+      if (_isPlaying) {
+        await pause();
+      } else {
+        await play();
+      }
+    }
   }
 
   Future<void> setStatePlaying() async {
@@ -50,7 +64,7 @@ class Player {
       MediaControl.pause,
       MediaControl.skipToNext
     ];
-    _playing = true;
+    _isPlaying = true;
     await _setState();
   }
 
@@ -60,6 +74,7 @@ class Player {
     controls= [  MediaControl.skipToPrevious,
       MediaControl.play,
       MediaControl.skipToNext];
+    _isPlaying = false;
     await _setState();
   }
 
@@ -70,7 +85,7 @@ class Player {
     await _audioPlayer.dispose();
 
     _playbackState = AudioProcessingState.stopped;
-
+    _isPlaying = false;
     await _setState();
 
     _completer.complete();
@@ -78,7 +93,7 @@ class Player {
   Future<void> _setState() async {
     log.fine('_setState() to ');
     await AudioServiceBackground.setState(
-        controls: controls, processingState: _playbackState, playing: true);
+        controls: controls, processingState: _playbackState, playing: _isPlaying);
   }
 
   Future<void> start() async {
@@ -118,6 +133,7 @@ class Player {
     _uri = args[3];
     _position = int.parse(args[5]);
     print('setMediaItem $_position');
+    _isLoadTrack = true;
     await AudioServiceBackground.setMediaItem(
       MediaItem(
         id: '1000',

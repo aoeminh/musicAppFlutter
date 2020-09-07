@@ -58,6 +58,13 @@ class BackgroundPlayerTask extends BackgroundAudioTask {
   }
 
   @override
+  Future onClick(MediaButton button) {
+    print('onClick');
+    player.onClick();
+  }
+
+
+  @override
   Future<dynamic> onCustomAction(String name, dynamic arguments) async {
     print('onCustomAction');
     switch (name) {

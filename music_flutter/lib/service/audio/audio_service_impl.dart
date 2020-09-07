@@ -98,15 +98,15 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
             // TODO: Handle this case.
             break;
           case AudioProcessingState.ready:
+            print('state.playing ${state.playing}');
             if(state.playing){
-              _onPlay();
+             await _onPlay();
             }else{
-              _onPause();
+              await _onPause();
             }
-
             break;
           case AudioProcessingState.buffering:
-            await _onBuffering();
+//            await _onBuffering();
             break;
           case AudioProcessingState.fastForwarding:
             // TODO: Handle this case.

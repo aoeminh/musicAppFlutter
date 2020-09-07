@@ -22,28 +22,41 @@ class PlayControl extends StatelessWidget {
           (audioState, nowPlaying) =>
               PlayControlState(episode: nowPlaying, audioState: audioState)),
       builder: (context, snapshot) {
-        print('snapshot $snapshot');
         if (snapshot.hasData) {
           final nowPlaying = snapshot.data.episode;
           final audioState = snapshot.data.audioState;
-          print('audioState $audioState nowPlaying ${nowPlaying.guid} ');
           if (episode.guid == nowPlaying.guid) {
+            print(' AudioState $audioState');
             if (audioState == AudioState.buffering) {
+              print(' AudioState.buffering');
               return PauseLoadingButton();
             } else if (audioState == AudioState.playing) {
-              return PlayPauseButton(
-                iconData: Icons.pause,
+              print(' AudioState.playing');
+              return InkWell(
+                onTap: () {
+                  print('sss');
+                  _audioBloc.transitionState(TransitionState.pause);
+                },
+                child: PlayPauseButton(
+                  iconData: Icons.pause,
+                ),
               );
             } else {
-              return PlayPauseButton(
-                iconData: Icons.play_arrow,
+              print(' AudioState.pause');
+              return InkWell(
+                onTap: () {
+                  _audioBloc.transitionState(TransitionState.play);
+                },
+                child: PlayPauseButton(
+                  iconData: Icons.play_arrow,
+                ),
               );
             }
           }
         }
-
         return InkWell(
           onTap: () {
+            print(' AudioState.default');
             _audioBloc.play(episode);
           },
           child: PlayPauseButton(
