@@ -21,7 +21,6 @@ class BackgroundPlayerTask extends BackgroundAudioTask {
     player.pause();
   }
 
-
   @override
   Future<void> onStart(Map<String, dynamic> params) {
     print('onStart');
@@ -36,13 +35,14 @@ class BackgroundPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onFastForward() {
-    // TODO: implement onFastForward
-//    return super.onFastForward();
+    print('onFastForward');
+    player.onFastForward();
   }
 
   @override
   Future<void> onRewind() {
-    // TODO: implement onRewind
+    print('onRewind');
+    player.onRewind();
 //    return super.onRewind();
   }
 
@@ -62,7 +62,6 @@ class BackgroundPlayerTask extends BackgroundAudioTask {
     print('onClick');
     player.onClick();
   }
-
 
   @override
   Future<dynamic> onCustomAction(String name, dynamic arguments) async {

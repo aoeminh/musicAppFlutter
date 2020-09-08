@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logging/logging.dart';
-import 'package:pedantic/pedantic.dart';
 
 class Player {
   AudioPlayer _audioPlayer = AudioPlayer();
@@ -17,30 +16,29 @@ class Player {
   final Completer _completer = Completer<dynamic>();
 
   Future<void> play() async {
-    if(_isLoadTrack){
+    if (_isLoadTrack) {
       await _audioPlayer.setUrl(_uri);
+      if (_position > 0) {
+        await _audioPlayer.seek(Duration(milliseconds: _position));
+      }
       _isLoadTrack = false;
     }
-
+    print('moving position to ${_position}');
     if (_audioPlayer.playbackEvent.state != AudioPlaybackState.connecting ||
         _audioPlayer.playbackEvent.state != AudioPlaybackState.none) {
       try {
-      print('_audioPlayer.playbackEvent.state ${_audioPlayer.playbackEvent.state}');
-      unawaited(_audioPlayer.play());
+        print(
+            '_audioPlayer.playbackEvent.state ${_audioPlayer.playbackEvent.state}');
+        _audioPlayer.play();
       } catch (e) {
         print('State error');
       }
     }
 
-    if (_position > 0) {
-      print('moving position to ${_position}');
-
-      await _audioPlayer.seek(Duration(milliseconds: _position));
-    }
     await setStatePlaying();
   }
 
-  Future<void> pause()async{
+  Future<void> pause() async {
     print('player pause');
     await _audioPlayer.pause();
     await setPauseState();
@@ -56,24 +54,66 @@ class Player {
     }
   }
 
+  Future<void> onRewind() async {
+    if (_position > 0) {
+      _position -= 30000;
+
+      if (_position < 0) {
+        _position = 0;
+      }
+
+      await _audioPlayer.seek(Duration(milliseconds: _position));
+
+      if (_isPlaying) {
+        await setStatePlaying();
+      } else {
+        await setStateRewind();
+      }
+    }
+  }
+
+  Future<void> onFastForward() async {
+    _position += 30000;
+    await _audioPlayer.seek(Duration(milliseconds: _position));
+    if (_isPlaying) {
+      await setStatePlaying();
+    } else {
+      await setStateFastForward();
+    }
+  }
+
   Future<void> setStatePlaying() async {
     print('setStatePlaying');
     _playbackState = AudioProcessingState.ready;
     controls = [
-      MediaControl.skipToPrevious,
+      MediaControl.rewind,
       MediaControl.pause,
-      MediaControl.skipToNext
+      MediaControl.fastForward
     ];
     _isPlaying = true;
     await _setState();
   }
 
-  Future<void> setPauseState()async{
+  Future<void> setStateRewind() async {
+    print('setStateRewind');
+    _playbackState = AudioProcessingState.rewinding;
+    await _setState();
+  }
+
+  Future<void> setStateFastForward() async {
+    print('setStateFastForward');
+    _playbackState = AudioProcessingState.fastForwarding;
+    await _setState();
+  }
+
+  Future<void> setPauseState() async {
     print('setPauseState');
     _playbackState = AudioProcessingState.ready;
-    controls= [  MediaControl.skipToPrevious,
+    controls = [
+      MediaControl.rewind,
       MediaControl.play,
-      MediaControl.skipToNext];
+      MediaControl.fastForward
+    ];
     _isPlaying = false;
     await _setState();
   }
@@ -90,10 +130,13 @@ class Player {
 
     _completer.complete();
   }
+
   Future<void> _setState() async {
     log.fine('_setState() to ');
     await AudioServiceBackground.setState(
-        controls: controls, processingState: _playbackState, playing: _isPlaying);
+        controls: controls,
+        processingState: _playbackState,
+        playing: _isPlaying);
   }
 
   Future<void> start() async {
