@@ -17,6 +17,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
     return StreamBuilder<AudioState>(
       stream: audioBloc.audioStateStream,
       builder: (context, snapshot) {
+        print('snapshot.data');
         if (snapshot.data == AudioState.none ||
             snapshot.data == AudioState.stopped) {
           return Container();
@@ -35,24 +36,50 @@ class _MiniPlayer extends StatelessWidget {
     return StreamBuilder<Episode>(
       stream: audioBloc.playStream,
       builder: (context, snapshot) {
-        final episode = snapshot.data;
-        return ListTile(
-          leading: CachedNetworkImage(
-            imageUrl: episode.imageUrl,
-          ),
-          title: Text(episode.title),
-          subtitle: Text(episode.author ?? ''),
-          trailing: StreamBuilder<AudioState>(
-              stream: audioBloc.audioStateStream,
-              builder: (context, snapshot) {
-                final state = snapshot.data;
-                if (state == AudioState.playing) {
-                  return Icon(Icons.pause);
-                } else {
-                  return Icon(Icons.play_arrow);
-                }
-              }),
-        );
+        print('audioBloc.playStream');
+        if (snapshot.hasData) {
+          final episode = snapshot.data;
+          return Container(
+            color: Colors.black12,
+            child: ListTile(
+              leading: CachedNetworkImage(
+                imageUrl: episode.imageUrl,
+              ),
+              title: Text(episode.title),
+              subtitle: Text(episode.author ?? ''),
+              trailing: StreamBuilder<AudioState>(
+                  stream: audioBloc.audioStateStream,
+                  builder: (context, snapshot) {
+                    final state = snapshot.data;
+                    if (state == AudioState.playing) {
+                      return InkWell(
+                        onTap: () {
+                          audioBloc.transitionState(TransitionState.pause);
+                        },
+                        child: Icon(
+                          Icons.pause,
+                          size: 38,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      );
+                    } else {
+                      return InkWell(
+                        onTap: () {
+                          audioBloc.transitionState(TransitionState.play);
+                        },
+                        child: Icon(
+                          Icons.play_arrow,
+                          size: 38,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      );
+                    }
+                  }),
+            ),
+          );
+        } else {
+          return Container();
+        }
       },
     );
   }

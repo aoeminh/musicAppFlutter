@@ -6,7 +6,6 @@ import 'package:music_flutter/model/episode.dart';
 import 'package:music_flutter/service/audio/audio_service.dart';
 import 'package:rxdart/rxdart.dart';
 
-
 enum TransitionState {
   play,
   pause,
@@ -30,7 +29,6 @@ class AudioBloc extends BlocBase {
   BehaviorSubject<TransitionState> _transitionState = BehaviorSubject();
 
   handlePlayEpisode() {
-    print('handlePlayEpisode111');
     _playSubject.listen((episode) {
       print('handlePlayEpisode');
       audioPlayerService.playEpisode(episode: episode);
@@ -46,11 +44,11 @@ class AudioBloc extends BlocBase {
       }
     });
   }
-  
-  handleTransitionPlayingState(){
-    _transitionState.listen((state) async{
+
+  handleTransitionPlayingState() {
+    _transitionState.listen((state) async {
       print('handleTransitionPlayingState $state');
-      switch(state){
+      switch (state) {
         case TransitionState.play:
           await audioPlayerService.play();
           break;

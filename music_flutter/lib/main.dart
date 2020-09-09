@@ -22,6 +22,7 @@ import 'ui/download/download.dart';
 import 'ui/library/library_widget.dart';
 import 'ui/podcast_detail/bloc/podcast_bloc.dart';
 import 'ui/search/search.dart';
+import 'ui/widget/mini_player.dart';
 
 void main() {
   Logger.root.level = Level.FINE;
@@ -34,7 +35,7 @@ void main() {
   runApp(MusicApp());
 }
 
-class MusicApp extends StatelessWidget  {
+class MusicApp extends StatelessWidget {
   // This widget is the root of your application.
   final themes = ThemeApp.primary();
   final PodCastApiImpl podCastApi;
@@ -62,8 +63,8 @@ class MusicApp extends StatelessWidget  {
           dispose: (_, value) => value.dispose(),
         ),
         Provider<PodcastBloc>(
-          create: (_)=> PodcastBloc(podcastService),
-          dispose: (_,value) => value.dispose(),
+          create: (_) => PodcastBloc(podcastService),
+          dispose: (_, value) => value.dispose(),
         ),
         Provider<AudioBloc>(
           create: (_) => AudioBloc(audioPlayerService: audioPlayerService),
@@ -95,26 +96,36 @@ class MusicAppHome extends StatefulWidget {
   _MusicAppHomeState createState() => _MusicAppHomeState();
 }
 
-class _MusicAppHomeState extends State<MusicAppHome> with WidgetsBindingObserver {
+class _MusicAppHomeState extends State<MusicAppHome>
+    with WidgetsBindingObserver {
   Logger log;
 
   @override
   void initState() {
+    final audioBloc = Provider.of<AudioBloc>(context, listen: false);
+    WidgetsBinding.instance.addObserver(this);
+    audioBloc.changeLifecycle(AppLifecycleState.resumed);
     super.initState();
-    log = Logger('_MyHomePageState');
   }
-
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print('didChangeAppLifecycleState $state');
     final audioBloc = Provider.of<AudioBloc>(context, listen: false);
-    if(state == AppLifecycleState.resumed){
+    if (state == AppLifecycleState.resumed) {
       audioBloc.changeLifecycle(state);
-    }else if(state == AppLifecycleState.paused){
+    } else if (state == AppLifecycleState.paused) {
       audioBloc.changeLifecycle(state);
     }
+  }
 
+  @override
+  void dispose() {
+  
+    final audioBloc = Provider.of<AudioBloc>(context, listen: false);
+    WidgetsBinding.instance.removeObserver(this);
+    audioBloc.changeLifecycle(AppLifecycleState.paused);
+    super.dispose();
   }
 
   @override
@@ -151,7 +162,7 @@ class _MusicAppHomeState extends State<MusicAppHome> with WidgetsBindingObserver
   }
 
   _buildBody(PageBlock pageBlock) => AudioServiceWidget(
-    child: Column(
+        child: Column(
           children: <Widget>[
             Expanded(
               child: CustomScrollView(slivers: <Widget>[
@@ -164,10 +175,11 @@ class _MusicAppHomeState extends State<MusicAppHome> with WidgetsBindingObserver
                   },
                 )
               ]),
-            )
+            ),
+            MiniPlayer()
           ],
         ),
-  );
+      );
 
   buildAppBar() => SliverAppBar(
         floating: false,

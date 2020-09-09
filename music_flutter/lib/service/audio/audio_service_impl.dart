@@ -41,7 +41,7 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
         startPosition.toString()
       ];
 
-       _audioStateSubject.add(AudioState.buffering);
+      _audioStateSubject.add(AudioState.buffering);
 
       if (!AudioService.running) {
         await _start();
@@ -60,16 +60,28 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
   Future<void> resume() async {
     print('resume');
     await AudioService.connect();
+
+    if (_episode != null) {
+      var playbackState = AudioService.playbackState;
+      var audioProgressState =
+          playbackState.processingState ?? AudioProcessingState.none;
+      if (audioProgressState == AudioProcessingState.none) {
+         _audioStateSubject.add(AudioState.stopped);
+      }else{
+
+      }
+    }
   }
 
   @override
   Future<void> play() => AudioService.play();
 
   @override
-  Future<void> stop()async {}
+  Future<void> stop() async {}
 
   @override
   Future<void> suspend() async {
+     print('suspend');
     await AudioService.disconnect();
   }
 
@@ -99,9 +111,9 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
             break;
           case AudioProcessingState.ready:
             print('state.playing ${state.playing}');
-            if(state.playing){
-             await _onPlay();
-            }else{
+            if (state.playing) {
+              await _onPlay();
+            } else {
               await _onPause();
             }
             break;
@@ -127,7 +139,7 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
             // TODO: Handle this case.
             break;
           case AudioProcessingState.stopped:
-             _onStop();
+            _onStop();
             break;
           case AudioProcessingState.error:
             // TODO: Handle this case.
@@ -136,6 +148,7 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
       }
     });
   }
+
   Future<void> _onBuffering() async {
     _audioStateSubject.add(AudioState.buffering);
   }
