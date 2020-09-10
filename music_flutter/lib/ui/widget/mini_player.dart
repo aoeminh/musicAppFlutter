@@ -17,7 +17,6 @@ class _MiniPlayerState extends State<MiniPlayer> {
     return StreamBuilder<AudioState>(
       stream: audioBloc.audioStateStream,
       builder: (context, snapshot) {
-        print('snapshot.data');
         if (snapshot.data == AudioState.none ||
             snapshot.data == AudioState.stopped) {
           return Container();

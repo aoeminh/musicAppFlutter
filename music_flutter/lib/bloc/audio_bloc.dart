@@ -88,4 +88,5 @@ class AudioBloc extends BlocBase {
 
   Stream<AudioState> get audioStateStream =>
       audioPlayerService.audioStateStream;
+  Stream<PositionState> get postionStateStream => audioPlayerService.positionStateStream;
 }

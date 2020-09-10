@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -12,6 +14,12 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
   Episode _episode;
   final BehaviorSubject<AudioState> _audioStateSubject =
       BehaviorSubject.seeded(AudioState.none);
+
+  StreamSubscription _positionSubcription;
+  final _durationTicker =
+      Stream<int>.periodic(Duration(milliseconds: 500)).asBroadcastStream();
+
+  final PublishSubject<PositionState> _positionSubject = PublishSubject();
 
   AudioPlayerServiceImpl() {
     handleAudioServiceTransitions();
@@ -66,9 +74,9 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
       var audioProgressState =
           playbackState.processingState ?? AudioProcessingState.none;
       if (audioProgressState == AudioProcessingState.none) {
-         _audioStateSubject.add(AudioState.stopped);
-      }else{
-
+        _audioStateSubject.add(AudioState.stopped);
+      } else {
+        _startDurationTicker();
       }
     }
   }
@@ -81,8 +89,9 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
 
   @override
   Future<void> suspend() async {
-     print('suspend');
+    print('suspend');
     await AudioService.disconnect();
+    _stopDurationTicker();
   }
 
   Future<void> _start() async {
@@ -155,17 +164,54 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
 
   Future<void> _onPlay() async {
     _audioStateSubject.add(AudioState.playing);
+    _startDurationTicker();
   }
 
   Future<void> _onPause() async {
     _audioStateSubject.add(AudioState.pausing);
+    _stopDurationTicker();
   }
 
   Future<void> _onStop() async {
     _audioStateSubject.add(AudioState.stopped);
+    _stopDurationTicker();
+  }
+
+  _startDurationTicker() {
+    print('_startDurationTicker');
+    if (_positionSubcription == null) {
+      _positionSubcription = _durationTicker.listen((onData) {
+        _updatePosition();
+      });
+    } else {
+      _positionSubcription.resume();
+    }
+  }
+
+  _stopDurationTicker() {
+    if (_positionSubcription != null) {
+      _positionSubcription.cancel();
+      _positionSubcription = null;
+    }
+  }
+
+  _updatePosition() {
+     print('_updatePosition');
+    var playbackState = AudioService.playbackState;
+    if (playbackState != null) {
+      var position = playbackState.currentPosition;
+      var duration = _episode == null ? 0 : _episode.duration;
+      if (duration > 0) {
+        var percent =
+            position.inSeconds > 0 ? (position.inSeconds / duration * 100) : 0;
+        _positionSubject
+            .add(PositionState(position: position, percent: percent.toInt()));
+      }
+    }
   }
 
   Stream<AudioState> get audioStateStream => _audioStateSubject.stream;
+  Stream<PositionState> get positionStateStream => _positionSubject.stream;
 }
 
 void backgroundPlay() {

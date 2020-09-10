@@ -9,6 +9,13 @@ enum AudioState {
   stopped,
 }
 
+class PositionState {
+  final Duration position;
+  final int percent;
+
+  PositionState({this.position, this.percent});
+}
+
 abstract class AudioPlayerService {
   /// Play a new episode, optionally resume at last save point.
   Future<void> playEpisode({Episode episode});
@@ -36,4 +43,6 @@ abstract class AudioPlayerService {
   Future<void> suspend();
 
   Stream<AudioState> audioStateStream;
+
+  Stream<PositionState> positionStateStream;
 }

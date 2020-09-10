@@ -10,6 +10,7 @@ import 'package:music_flutter/service/audio/audio_service_impl.dart';
 import 'package:music_flutter/service/podcast_service.dart';
 import 'package:music_flutter/service/podcast_service_impl.dart';
 import 'package:music_flutter/themes.dart';
+import 'package:music_flutter/ui/now_playing.dart';
 import 'package:podcast_search/podcast_search.dart';
 import 'package:provider/provider.dart';
 
@@ -121,7 +122,6 @@ class _MusicAppHomeState extends State<MusicAppHome>
 
   @override
   void dispose() {
-  
     final audioBloc = Provider.of<AudioBloc>(context, listen: false);
     WidgetsBinding.instance.removeObserver(this);
     audioBloc.changeLifecycle(AppLifecycleState.paused);
@@ -176,10 +176,32 @@ class _MusicAppHomeState extends State<MusicAppHome>
                 )
               ]),
             ),
-            MiniPlayer()
+            InkWell(
+                onTap: () {
+                  print('hello');
+                  Navigator.push(context, createNowPlayingRoute());
+                },
+                child: MiniPlayer())
           ],
         ),
       );
+
+  Route createNowPlayingRoute() {
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondAnimation) => NowPlaying(),
+        transitionsBuilder: (context, animation, secondAnimation, child) {
+          var begin = Offset(0.0, 1.0);
+          var end = Offset.zero;
+          var curves = CurveTween(curve: Curves.easeIn);
+          var tween = Tween(begin: begin, end: end).chain(curves);
+
+          var tweenAnimation = animation.drive(tween);
+          return SlideTransition(
+            position: tweenAnimation,
+            child: child,
+          );
+        });
+  }
 
   buildAppBar() => SliverAppBar(
         floating: false,
