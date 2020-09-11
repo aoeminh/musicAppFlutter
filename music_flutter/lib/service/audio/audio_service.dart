@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:music_flutter/model/episode.dart';
 
 enum AudioState {
@@ -11,7 +12,7 @@ enum AudioState {
 
 class PositionState {
   final Duration position;
-  final int percent;
+  final double percent;
 
   PositionState({this.position, this.percent});
 }
@@ -41,6 +42,7 @@ abstract class AudioPlayerService {
 
   /// Call when the app is about to be suspended.
   Future<void> suspend();
+  Future<void> seek({@required int position});
 
   Stream<AudioState> audioStateStream;
 

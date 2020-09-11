@@ -82,6 +82,22 @@ class Player {
     }
   }
 
+  Future<void> onSeekTo(Duration duration) async {
+    await _audioPlayer.seek(duration);
+    _position = duration.inMilliseconds;
+    controls = [
+      MediaControl.rewind,
+      MediaControl.play,
+      MediaControl.fastForward
+    ];
+    await AudioServiceBackground.setState(
+        controls: controls,
+        processingState: _playbackState ?? AudioProcessingState.stopped,
+        playing: _isPlaying,
+        position: duration,
+        systemActions: [MediaAction.seekTo]);
+  }
+
   Future<void> setStatePlaying() async {
     print('setStatePlaying');
     _playbackState = AudioProcessingState.ready;
@@ -136,6 +152,7 @@ class Player {
     await AudioServiceBackground.setState(
         controls: controls,
         processingState: _playbackState,
+        position: Duration(milliseconds: _position),
         playing: _isPlaying);
   }
 

@@ -64,6 +64,11 @@ class BackgroundPlayerTask extends BackgroundAudioTask {
   }
 
   @override
+  Future<void> onSeekTo(Duration position) async {
+   await player.onSeekTo(position);
+  }
+
+  @override
   Future<dynamic> onCustomAction(String name, dynamic arguments) async {
     print('onCustomAction');
     switch (name) {

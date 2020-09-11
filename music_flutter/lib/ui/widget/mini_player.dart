@@ -35,7 +35,6 @@ class _MiniPlayer extends StatelessWidget {
     return StreamBuilder<Episode>(
       stream: audioBloc.playStream,
       builder: (context, snapshot) {
-        print('audioBloc.playStream');
         if (snapshot.hasData) {
           final episode = snapshot.data;
           return Container(

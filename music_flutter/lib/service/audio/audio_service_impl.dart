@@ -94,6 +94,17 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
     _stopDurationTicker();
   }
 
+  @override
+  Future<void> seek({@required int position}) async {
+    var duration = _episode == null ? 0 : _episode.duration;
+    if (duration > 0) {
+      var percent = position > 0 ? (position / duration * 100) : 0;
+      _positionSubject.add(PositionState(
+          position: Duration(seconds: position), percent: percent.toDouble()));
+    }
+    await AudioService.seekTo(Duration(seconds: position));
+  }
+
   Future<void> _start() async {
     await AudioService.start(
       backgroundTaskEntrypoint: backgroundPlay,
@@ -196,16 +207,16 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
   }
 
   _updatePosition() {
-     print('_updatePosition');
     var playbackState = AudioService.playbackState;
     if (playbackState != null) {
       var position = playbackState.currentPosition;
       var duration = _episode == null ? 0 : _episode.duration;
       if (duration > 0) {
+        print('position $position');
         var percent =
             position.inSeconds > 0 ? (position.inSeconds / duration * 100) : 0;
-        _positionSubject
-            .add(PositionState(position: position, percent: percent.toInt()));
+        _positionSubject.add(
+            PositionState(position: position, percent: percent.toDouble()));
       }
     }
   }

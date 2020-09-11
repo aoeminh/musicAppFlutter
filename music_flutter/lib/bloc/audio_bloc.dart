@@ -21,13 +21,14 @@ class AudioBloc extends BlocBase {
     handlePlayEpisode();
     handleTransitionPlayingState();
     handleAppLifecycleChange();
+    handleChangePositon();
   }
 
   BehaviorSubject<Episode> _playSubject = BehaviorSubject();
 
   BehaviorSubject<AppLifecycleState> _appLifeCycleSubject = BehaviorSubject();
   BehaviorSubject<TransitionState> _transitionState = BehaviorSubject();
-
+  BehaviorSubject<int> _changePosition = BehaviorSubject();
   handlePlayEpisode() {
     _playSubject.listen((episode) {
       print('handlePlayEpisode');
@@ -68,12 +69,18 @@ class AudioBloc extends BlocBase {
     });
   }
 
+  handleChangePositon() {
+    _changePosition.listen((position) {
+      audioPlayerService.seek(position: position);
+    });
+  }
+
   @override
   void dispose() {
-    // TODO: implement dispose
     _playSubject.close();
     _appLifeCycleSubject.close();
     _transitionState.close();
+    _changePosition.close();
   }
 
   Function(Episode) get play => _playSubject.add;
@@ -82,11 +89,14 @@ class AudioBloc extends BlocBase {
 
   Function(TransitionState) get transitionState => _transitionState.add;
 
+  Function(int) get changePosition => _changePosition.add;
+
   Stream<Episode> get playStream => _playSubject.stream;
 
   Stream<AppLifecycleState> get lifecycleStream => _appLifeCycleSubject.stream;
 
   Stream<AudioState> get audioStateStream =>
       audioPlayerService.audioStateStream;
-  Stream<PositionState> get postionStateStream => audioPlayerService.positionStateStream;
+  Stream<PositionState> get postionStateStream =>
+      audioPlayerService.positionStateStream;
 }
