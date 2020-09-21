@@ -17,6 +17,12 @@ class _NowPlayingState extends State<NowPlaying> {
   @override
   void initState() {
     super.initState();
+    var audioBloc = Provider.of<AudioBloc>(context, listen: false);
+    audioBloc.audioStateStream.listen((state) {
+      if (state == AudioState.stopped) {
+        // Navigator.pop(context);
+      }
+    });
   }
 
   @override
@@ -64,9 +70,9 @@ class _NowPlayingState extends State<NowPlaying> {
                     height: 50,
                     child: Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            Theme.of(context).primaryColor),
-                      ),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.green,
+                      )),
                     ),
                   );
                 },
@@ -126,21 +132,29 @@ class _NowPlayingState extends State<NowPlaying> {
               Text(
                   '${_printDuration(snapshot.hasData ? snapshot.data.position : Duration(seconds: 0))}'),
               Expanded(
-                  child: SliderTheme(
-                data: SliderThemeData(
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6)),
-                child: Slider(
-                  onChanged: (value) {
-                    audiobloc.changePosition(value.toInt());
-                  },
-                  value: value,
-                  min: 0,
-                  max: episode.duration.toDouble(),
-                  activeColor: Theme.of(context).primaryColor,
-                  inactiveColor:
-                      Theme.of(context).primaryColor.withOpacity(0.3),
-                ),
-              )),
+                  child: snapshot.hasData
+                      ? SliderTheme(
+                          data: SliderThemeData(
+                              thumbShape:
+                                  RoundSliderThumbShape(enabledThumbRadius: 6)),
+                          child: Slider(
+                            onChanged: (value) {
+                              audiobloc.changePosition(value.toInt());
+                            },
+                            value: value,
+                            min: 0,
+                            max: episode.duration.toDouble(),
+                            activeColor: Theme.of(context).primaryColor,
+                            inactiveColor:
+                                Theme.of(context).primaryColor.withOpacity(0.3),
+                          ),
+                        )
+                      : Slider(
+                          onChanged: null,
+                          value: 0,
+                          min: 0,
+                          max: 1,
+                        )),
               Text('${_printDuration(Duration(seconds: episode.duration))}')
             ],
           );
@@ -161,7 +175,7 @@ class _NowPlayingState extends State<NowPlaying> {
               child: Icon(
                 Icons.fast_rewind,
                 size: 30,
-                color: Theme.of(context).primaryColor,
+                color: Colors.green,
               ),
             ),
             snapshot.hasData
@@ -185,7 +199,7 @@ class _NowPlayingState extends State<NowPlaying> {
               child: Icon(
                 Icons.fast_forward,
                 size: 30,
-                color: Theme.of(context).primaryColor,
+                color: Colors.green,
               ),
             ),
           ],
@@ -197,8 +211,7 @@ class _NowPlayingState extends State<NowPlaying> {
   _buildPlayPauseButton(IconData iconData, BuildContext context) => Container(
       width: 50,
       height: 50,
-      decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor, shape: BoxShape.circle),
+      decoration: BoxDecoration(color: Colors.green, shape: BoxShape.circle),
       child: Icon(
         iconData,
         color: Colors.white,

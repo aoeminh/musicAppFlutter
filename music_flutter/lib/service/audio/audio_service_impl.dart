@@ -48,7 +48,7 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
         episode.downloaded ? '1' : '0',
         startPosition.toString()
       ];
-
+      print('playEpisode ${AudioService.running} ');
       _audioStateSubject.add(AudioState.buffering);
 
       if (!AudioService.running) {
@@ -85,7 +85,9 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
   Future<void> play() => AudioService.play();
 
   @override
-  Future<void> stop() async {}
+  Future<void> stop() async {
+    AudioService.stop();
+  }
 
   @override
   Future<void> suspend() async {
@@ -121,7 +123,7 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
       if (state != null && state is PlaybackState) {
         final ps = state.processingState;
         print(
-            ' Received state change from audio service ${ps.toString()} state.currentPosition ${state.currentPosition}');
+            ' Received state change from audio service ${ps.toString()} state.playing ${state.playing}');
         switch (ps) {
           case AudioProcessingState.none:
             // TODO: Handle this case.
@@ -130,7 +132,6 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
             // TODO: Handle this case.
             break;
           case AudioProcessingState.ready:
-            print('state.playing ${state.playing}');
             if (state.playing) {
               await _onPlay();
             } else {
@@ -184,8 +185,14 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
   }
 
   Future<void> _onStop() async {
+    var playbackState = await AudioService.playbackState;
+    _episode = null;
+    print('_onStop() ${playbackState.position}');
+    await _stopDurationTicker();
+
+    await Future<int>.delayed(Duration(seconds: 1));
+    print('SAAadsfadsfAA ${AudioService.running}');
     _audioStateSubject.add(AudioState.stopped);
-    _stopDurationTicker();
   }
 
   _startDurationTicker() {
@@ -199,9 +206,9 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
     }
   }
 
-  _stopDurationTicker() {
+  Future<void> _stopDurationTicker() async {
     if (_positionSubcription != null) {
-      _positionSubcription.cancel();
+      await _positionSubcription.cancel();
       _positionSubcription = null;
     }
   }
@@ -212,7 +219,7 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
       var position = playbackState.currentPosition;
       var duration = _episode == null ? 0 : _episode.duration;
       if (duration > 0) {
-        print('position $position');
+        print('position $position ${Duration(seconds: _episode.duration)}');
         var percent =
             position.inSeconds > 0 ? (position.inSeconds / duration * 100) : 0;
         _positionSubject.add(

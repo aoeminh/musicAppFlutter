@@ -18,13 +18,14 @@ class Player {
   Future<void> play() async {
     if (_isLoadTrack) {
       await _audioPlayer.setUrl(_uri);
+      print('setUrl');
       if (_position > 0) {
         await _audioPlayer.seek(Duration(milliseconds: _position));
       }
       _isLoadTrack = false;
     }
     print('moving position to ${_position}');
-    if (_audioPlayer.playbackEvent.state != AudioPlaybackState.connecting ||
+    if (_audioPlayer.playbackEvent.state != AudioPlaybackState.connecting &&
         _audioPlayer.playbackEvent.state != AudioPlaybackState.none) {
       try {
         print(
@@ -40,8 +41,14 @@ class Player {
 
   Future<void> pause() async {
     print('player pause');
-    await _audioPlayer.pause();
-    await setPauseState();
+    if (_audioPlayer.playbackEvent.state == AudioPlaybackState.playing) {
+      await _audioPlayer.pause();
+      await setPauseState();
+    }
+  }
+
+  Future<void> stop() async {
+    await _setStoppedState();
   }
 
   Future<void> onClick() async {
@@ -83,19 +90,22 @@ class Player {
   }
 
   Future<void> onSeekTo(Duration duration) async {
-    await _audioPlayer.seek(duration);
-    _position = duration.inMilliseconds;
-    controls = [
-      MediaControl.rewind,
-      MediaControl.play,
-      MediaControl.fastForward
-    ];
-    await AudioServiceBackground.setState(
-        controls: controls,
-        processingState: _playbackState ?? AudioProcessingState.stopped,
-        playing: _isPlaying,
-        position: duration,
-        systemActions: [MediaAction.seekTo]);
+    if (_audioPlayer.playbackEvent.state != AudioPlaybackState.none &&
+        _audioPlayer.playbackEvent.state != AudioPlaybackState.connecting) {
+      await _audioPlayer.seek(duration);
+      _position = duration.inMilliseconds;
+      controls = [
+        MediaControl.rewind,
+        MediaControl.play,
+        MediaControl.fastForward
+      ];
+      await AudioServiceBackground.setState(
+          controls: controls,
+          processingState: _playbackState ?? AudioProcessingState.stopped,
+          playing: _isPlaying,
+          position: duration,
+          systemActions: [MediaAction.seekTo]);
+    }
   }
 
   Future<void> setStatePlaying() async {
@@ -135,20 +145,19 @@ class Player {
   }
 
   Future<void> _setStoppedState() async {
-    log.fine('setStoppedState()');
     print('setStoppedState');
-    await _audioPlayer.stop();
-    await _audioPlayer.dispose();
-
     _playbackState = AudioProcessingState.stopped;
+    controls = [
+      MediaControl.play,
+    ];
     _isPlaying = false;
     await _setState();
-
+    await _audioPlayer.stop();
+    await _audioPlayer.dispose();
     _completer.complete();
   }
 
   Future<void> _setState() async {
-    log.fine('_setState() to ');
     await AudioServiceBackground.setState(
         controls: controls,
         processingState: _playbackState,
@@ -157,7 +166,10 @@ class Player {
   }
 
   Future<void> start() async {
-    log.fine('start()');
+    print('start()');
+    _audioPlayer.playbackStateStream.listen((state) {
+      print('playerStateSubscription $state');
+    });
 
     var playerStateSubscription = _audioPlayer.playbackStateStream
         .where((state) => state == AudioPlaybackState.completed)
@@ -176,17 +188,13 @@ class Player {
     await playerStateSubscription.cancel();
     await eventSubscription.cancel();
 
-    await _audioPlayer.dispose();
+    // await _audioPlayer.dispose();
   }
 
   Future<void> complete() async {
-    log.fine('complete()');
-
-    await _audioPlayer.stop();
-
     _position = -1;
-
     await _setStoppedState();
+     await AudioService.stop();
   }
 
   Future<void> setMediaItem(dynamic args) async {

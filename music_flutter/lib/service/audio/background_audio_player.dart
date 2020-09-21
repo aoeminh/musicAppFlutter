@@ -28,9 +28,10 @@ class BackgroundPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  Future<void> onStop() {
+  Future<void> onStop() async {
     print('onStop');
-//    return super.onStop();
+    player.stop();
+    await super.onStop();
   }
 
   @override
@@ -65,7 +66,7 @@ class BackgroundPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onSeekTo(Duration position) async {
-   await player.onSeekTo(position);
+    await player.onSeekTo(position);
   }
 
   @override

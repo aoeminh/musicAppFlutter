@@ -106,6 +106,8 @@ class _MusicAppHomeState extends State<MusicAppHome>
     final audioBloc = Provider.of<AudioBloc>(context, listen: false);
     WidgetsBinding.instance.addObserver(this);
     audioBloc.changeLifecycle(AppLifecycleState.resumed);
+
+    
     super.initState();
   }
 
@@ -178,7 +180,6 @@ class _MusicAppHomeState extends State<MusicAppHome>
             ),
             InkWell(
                 onTap: () {
-                  print('hello');
                   Navigator.push(context, createNowPlayingRoute());
                 },
                 child: MiniPlayer())
