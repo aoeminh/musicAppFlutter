@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:music_flutter/bloc/audio_bloc.dart';
@@ -14,15 +16,23 @@ class NowPlaying extends StatefulWidget {
 }
 
 class _NowPlayingState extends State<NowPlaying> {
+  StreamSubscription audioSubcription;
   @override
   void initState() {
     super.initState();
     var audioBloc = Provider.of<AudioBloc>(context, listen: false);
-    audioBloc.audioStateStream.listen((state) {
+    audioSubcription = audioBloc.audioStateStream.listen((state) async {
       if (state == AudioState.stopped) {
-        // Navigator.pop(context);
+        Navigator.pop(context);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    // not listen  audioStateStream when screen was popped
+    audioSubcription.cancel();
+    super.dispose();
   }
 
   @override

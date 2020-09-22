@@ -188,15 +188,11 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
     var playbackState = await AudioService.playbackState;
     _episode = null;
     print('_onStop() ${playbackState.position}');
+        _audioStateSubject.add(AudioState.stopped);
     await _stopDurationTicker();
-
-    await Future<int>.delayed(Duration(seconds: 1));
-    print('SAAadsfadsfAA ${AudioService.running}');
-    _audioStateSubject.add(AudioState.stopped);
   }
 
   _startDurationTicker() {
-    print('_startDurationTicker');
     if (_positionSubcription == null) {
       _positionSubcription = _durationTicker.listen((onData) {
         _updatePosition();
@@ -219,11 +215,13 @@ class AudioPlayerServiceImpl extends AudioPlayerService {
       var position = playbackState.currentPosition;
       var duration = _episode == null ? 0 : _episode.duration;
       if (duration > 0) {
-        print('position $position ${Duration(seconds: _episode.duration)}');
-        var percent =
-            position.inSeconds > 0 ? (position.inSeconds / duration * 100) : 0;
-        _positionSubject.add(
-            PositionState(position: position, percent: percent.toDouble()));
+        if (position.inSeconds <= duration) {
+          var percent = position.inSeconds > 0
+              ? (position.inSeconds / duration * 100)
+              : 0;
+          _positionSubject.add(
+              PositionState(position: position, percent: percent.toDouble()));
+        }
       }
     }
   }

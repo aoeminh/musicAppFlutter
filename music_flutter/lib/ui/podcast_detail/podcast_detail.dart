@@ -82,8 +82,15 @@ class _PodcastDetailState extends State<PodcastDetail> {
                   child: CachedNetworkImage(
                     fit: BoxFit.fitWidth,
                     imageUrl: widget.podcastMusic.imageUrl,
-                    placeholder: (context, url) => CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                    placeholder: (context, url) => Center(
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.green),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -104,12 +111,9 @@ class _PodcastDetailState extends State<PodcastDetail> {
             return SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
                 return InkWell(
-                  onTap: (){
-
-                  },
+                  onTap: () {},
                   child: EpisodeWidget(
                     espisode: snapshot.data[index],
-
                   ),
                 );
               }, childCount: snapshot.data.length),
@@ -132,7 +136,9 @@ class _PodcastDetailState extends State<PodcastDetail> {
         if (state is BlocLoadingState) {
           return SliverToBoxAdapter(
             child: Center(
-              child: CircularProgressIndicator(),
+              child: Container(
+                  margin: EdgeInsets.only(top: 50),
+                  child: CircularProgressIndicator()),
             ),
           );
         } else if (state is BlocResultState<Podcast>) {

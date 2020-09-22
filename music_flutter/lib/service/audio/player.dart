@@ -152,7 +152,9 @@ class Player {
     ];
     _isPlaying = false;
     await _setState();
-    await _audioPlayer.stop();
+    if (_audioPlayer.playbackEvent.state != AudioPlaybackState.none) {
+      await _audioPlayer.stop();
+    }
     await _audioPlayer.dispose();
     _completer.complete();
   }
@@ -193,8 +195,7 @@ class Player {
 
   Future<void> complete() async {
     _position = -1;
-    await _setStoppedState();
-     await AudioService.stop();
+    await AudioService.stop();
   }
 
   Future<void> setMediaItem(dynamic args) async {
