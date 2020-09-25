@@ -6,6 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:music_flutter/bloc/audio_bloc.dart';
 import 'package:music_flutter/generated/l10n.dart';
 import 'package:music_flutter/model/episode.dart';
+import 'package:music_flutter/ui/widget/download_control.dart';
 import 'package:music_flutter/ui/widget/play_control.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
@@ -43,24 +44,7 @@ class _EpisodeWidgetState extends State<EpisodeWidget> {
               padding: EdgeInsets.all(0.0),
               height: 40.0,
               width: 38.0,
-              child: Stack(
-                children: <Widget>[
-                  CircularPercentIndicator(
-                      radius: 38.0,
-                      lineWidth: 2.0,
-                      percent: 0.8,
-                      center: Icon(
-                        Icons.file_download,
-                        size: 28,
-                        color: Theme.of(context).primaryColor,
-                      )),
-//                 const SpinKitRing(
-//                   lineWidth: 2.0,
-//                   color: Colors.blue,
-//                   size: 38.0,
-//                 ),
-                ],
-              ),
+              child: DownloadControl(episode:widget.espisode ,),
             ),
             PlayControl(
               episode: widget.espisode,

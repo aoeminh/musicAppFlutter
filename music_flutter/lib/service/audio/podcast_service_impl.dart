@@ -5,7 +5,7 @@ import 'package:music_flutter/api/podcast_api.dart';
 import 'package:music_flutter/model/episode.dart';
 import 'package:music_flutter/model/podcast.dart';
 import 'package:music_flutter/repository/repository.dart';
-import 'package:music_flutter/service/podcast_service.dart';
+import 'package:music_flutter/service/audio/podcast_service.dart';
 import 'package:podcast_search/podcast_search.dart'  as psapi;
 
 class PodcastServiceImpl extends PodcastService{

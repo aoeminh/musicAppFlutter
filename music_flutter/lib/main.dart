@@ -7,8 +7,10 @@ import 'package:music_flutter/bloc/audio_bloc.dart';
 import 'package:music_flutter/bloc/page_bloc.dart';
 import 'package:music_flutter/service/audio/audio_service.dart';
 import 'package:music_flutter/service/audio/audio_service_impl.dart';
-import 'package:music_flutter/service/podcast_service.dart';
-import 'package:music_flutter/service/podcast_service_impl.dart';
+import 'package:music_flutter/service/audio/podcast_service.dart';
+import 'package:music_flutter/service/audio/podcast_service_impl.dart';
+import 'package:music_flutter/service/download/donwload_service.dart';
+import 'package:music_flutter/service/download/download_service_impl.dart';
 import 'package:music_flutter/themes.dart';
 import 'package:music_flutter/ui/now_playing.dart';
 import 'package:podcast_search/podcast_search.dart';
@@ -43,10 +45,12 @@ class MusicApp extends StatelessWidget {
   final Repository repository;
   PodcastService podcastService;
   AudioPlayerService audioPlayerService;
+  DownloadService downloadService;
 
   MusicApp()
       : repository = SembastRepository(),
         audioPlayerService = AudioPlayerServiceImpl(),
+        downloadService = DownloadServiceImpl(),
         podCastApi = PodCastApiImpl() {
     this.podcastService = PodcastServiceImpl(podCastApi, repository);
   }
@@ -64,7 +68,7 @@ class MusicApp extends StatelessWidget {
           dispose: (_, value) => value.dispose(),
         ),
         Provider<PodcastBloc>(
-          create: (_) => PodcastBloc(podcastService),
+          create: (_) => PodcastBloc(podcastService, downloadService),
           dispose: (_, value) => value.dispose(),
         ),
         Provider<AudioBloc>(
@@ -106,7 +110,6 @@ class _MusicAppHomeState extends State<MusicAppHome>
     final audioBloc = Provider.of<AudioBloc>(context, listen: false);
     WidgetsBinding.instance.addObserver(this);
     audioBloc.changeLifecycle(AppLifecycleState.resumed);
-
 
     super.initState();
   }
@@ -180,7 +183,8 @@ class _MusicAppHomeState extends State<MusicAppHome>
             ),
             InkWell(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> NowPlaying()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => NowPlaying()));
                 },
                 child: MiniPlayer())
           ],

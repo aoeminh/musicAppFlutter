@@ -52,5 +52,7 @@
         <key>NSAllowsArbitraryLoadsForMedia</key>
         <true/>
     </dict>
+	 <key>FDMaximumConcurrentTasks</key>
+    <integer>1</integer>
 </dict>
 </plist>
